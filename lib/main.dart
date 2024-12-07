@@ -123,11 +123,13 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
   }
 }
 
+
 // グループに入る画面
 class JoinGroupScreen extends StatefulWidget {
   @override
   _JoinGroupScreenState createState() => _JoinGroupScreenState();
 }
+
 
 class _JoinGroupScreenState extends State<JoinGroupScreen> {
   final TextEditingController _groupNameController = TextEditingController();
@@ -201,14 +203,31 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Home'),
-      ),
-      body: Center(
-        child: Text(
-          'グループ "$groupName" にようこそ！',
-          style: TextStyle(fontSize: 24),
-        ),
+
+      body: _pages[_currentIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'ホーム',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: '検索',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Setting',
+          ),
+        ],
       ),
     );
   }
