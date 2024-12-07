@@ -16,11 +16,19 @@ dependencies:
   provider: ^6.0.0
   http: ^1.2.2
 
+  flutter_dotenv: ^5.0.2
+  flutter_web_auth:
+    path: ./flutter_web_auth
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   flutter_lints: ^5.0.0
 
+  integration_test:
+    sdk: flutter
+    
 flutter:
   uses-material-design: true
+  assets:
+    - .env
