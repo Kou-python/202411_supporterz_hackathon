@@ -8,6 +8,11 @@ const io = new Server(server);
 
 const groups = {}; // { groupId: { name: groupName, members: [] } }
 
+app.get('/callback', (req, res) => {
+	console.log('Callback endpoint reached');
+	res.send('Callback endpoint reached');
+});
+
 io.on("connection", (socket) => {
 	console.log(socket.id, "さんが入室しました");
 

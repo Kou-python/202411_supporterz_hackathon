@@ -1,15 +1,6 @@
 {
-  "name": "202412_supporterz_hackathon",
-  "version": "1.0.0",
-  "description": "https://talent.supporterz.jp/events/b3e7b1cb-3c95-4d84-a910-3cee34c43223/?utm_source=next&utm_medium=geekcamp",
-  "main": "index.js",
-  "directories": {
-    "lib": "lib"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "dependencies": {
+    "express": "^4.21.2",
+    "socket.io": "^4.8.1"
+  }
 }
