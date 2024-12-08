@@ -1,21 +1,9 @@
 import 'package:flutter/material.dart';
+import 'category.dart';
 
 void main() {
   runApp(MyApp());
 }
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: MyHomePage(),
-    );
-  }
-}
-
-// Pages--------------------------------------------
 
 class Home extends StatelessWidget {
   @override
@@ -31,7 +19,16 @@ class Home extends StatelessWidget {
   }
 }
 
-class Search extends StatelessWidget {
+//曲のカテゴリ検索
+class Search extends StatefulWidget {
+  @override
+  _SearchState createState() => _SearchState();
+}
+
+class _SearchState extends State<Search> {
+  final TextEditingController _controller =
+      TextEditingController(); // 追加: 入力を管理するコントローラー
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,7 +36,64 @@ class Search extends StatelessWidget {
         title: Text('Search'),
       ),
       body: Center(
-        child: Text('Search Page'),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // TextFieldにコントローラーを設定
+              Container(
+                width: 300,
+                child: TextField(
+                  controller: _controller, // コントローラーを設定
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: '知りたいカテゴリがあれば入力してください',
+                  ),
+                  autofocus: true,
+                ),
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                child: Text('検索'),
+                onPressed: () {
+                  // 入力されたカテゴリを取得
+                  String category = _controller.text;
+
+                  // Categoryページに渡す
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Category(category), // 渡す
+                    ),
+                  );
+                },
+              ),
+              SizedBox(height: 20),
+              Text('♬みんなに聞かれている曲ランキング♬'),
+              Container(
+                width: 600,
+                child: Table(
+                  columnWidths: <int, TableColumnWidth>{
+                    0: FixedColumnWidth(30),
+                    1: FixedColumnWidth(300),
+                    2: FixedColumnWidth(150),
+                  },
+                  border: TableBorder.all(),
+                  children: [
+                    for (int i = 0; i < 100; i++)
+                      TableRow(
+                        children: <Widget>[
+                          Text('${i + 1}', textAlign: TextAlign.center),
+                          Text("title", textAlign: TextAlign.center),
+                          Text("artist", textAlign: TextAlign.center),
+                        ],
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -59,7 +113,16 @@ class Setting extends StatelessWidget {
   }
 }
 
-// Page--------------------------------------------
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: MyHomePage(),
+    );
+  }
+}
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -99,7 +162,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
-            label: 'Setting',
+            label: '設定',
           ),
         ],
       ),
