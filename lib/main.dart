@@ -10,7 +10,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: GroupSelectionScreen(), // 最初に表示される画面
+      home: GroupSelectionScreen(),
     );
   }
 }
@@ -72,7 +72,7 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
 
     if (groupName.isNotEmpty && password.isNotEmpty) {
       // 入力が正しい場合、Home画面に遷移
-      Navigator.pushReplacement(
+      Navigator.push(
         context,
         MaterialPageRoute(
             builder: (context) => HomeScreen(groupName: groupName)),
@@ -123,13 +123,11 @@ class _CreateGroupScreenState extends State<CreateGroupScreen> {
   }
 }
 
-
 // グループに入る画面
 class JoinGroupScreen extends StatefulWidget {
   @override
   _JoinGroupScreenState createState() => _JoinGroupScreenState();
 }
-
 
 class _JoinGroupScreenState extends State<JoinGroupScreen> {
   final TextEditingController _groupNameController = TextEditingController();
@@ -143,7 +141,7 @@ class _JoinGroupScreenState extends State<JoinGroupScreen> {
     if (groupName.isNotEmpty && password.isNotEmpty) {
       // グループに入る処理（仮）
       // ここでグループ名とパスワードの照合を行い、正しければHome画面に遷移
-      Navigator.pushReplacement(
+      Navigator.push(
         context,
         MaterialPageRoute(
             builder: (context) => HomeScreen(groupName: groupName)),
@@ -194,17 +192,32 @@ class _JoinGroupScreenState extends State<JoinGroupScreen> {
   }
 }
 
-// Home画面
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   final String groupName;
 
+  // コンストラクタでグループ名を受け取る
   HomeScreen({required this.groupName});
+
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _currentIndex = 0;
+
+  final List<Widget> _pages = [
+    GroupHomePage(),
+    SongSelectionPage(),
+    SettingsPage(),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
-      body: _pages[_currentIndex],
+      appBar: AppBar(
+        title: Text('Group: ${widget.groupName}'), // グループ名を表示
+      ),
+      body: _pages[_currentIndex], // 現在のページを表示
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) {
@@ -212,23 +225,48 @@ class HomeScreen extends StatelessWidget {
             _currentIndex = index;
           });
         },
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'ホーム',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: '検索',
+            icon: Icon(Icons.music_note),
+            label: '曲選択',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
-            label: 'Setting',
+            label: '設定',
           ),
         ],
       ),
+    );
+  }
+}
+
+class GroupHomePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text('グループメンバー'),
+    );
+  }
+}
+
+class SongSelectionPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text('曲選択ページ'),
+    );
+  }
+}
+
+class SettingsPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text('設定ページ'),
     );
   }
 }
