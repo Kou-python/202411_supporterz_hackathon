@@ -8,69 +8,57 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key}); // keyパラメータを追加
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Spotify Token Demo',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: const MyHomePage(title: 'Top Tracks'), // constを追加
+      home: TokenPage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});// keyパラメータを追加
-
-  final String title;
-
+class TokenPage extends StatefulWidget {
   @override
-  MyHomePageState createState() => MyHomePageState(); // クラス名の先頭のアンダースコアを削除
+  _TokenPageState createState() => _TokenPageState();
 }
 
-class MyHomePageState extends State<MyHomePage> { // クラス名の先頭のアンダースコアを削除
+class _TokenPageState extends State<TokenPage> {
   final SpotifyService _spotifyService = SpotifyService();
-  List<dynamic> _topTracks = [];
-  bool _isLoading = true;
+  String? _accessToken;
 
-  @override
-  void initState() {
-    super.initState();
-    _fetchTopTracks();
-  }
-
-  Future<void> _fetchTopTracks() async {
-    final data = await _spotifyService.getTopTracks();
-    setState(() {
-      _topTracks = data['items'];
-      _isLoading = false;
-    });
+  Future<void> _getAccessToken() async {
+    try {
+      final token = await _spotifyService.getAccessToken();
+      setState(() {
+        _accessToken = token;
+      });
+    } catch (e) {
+      setState(() {
+        _accessToken = 'Error: $e';
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
+      appBar: AppBar(title: Text('Spotify Token')),
       body: Center(
-        child: _isLoading
-            ? const CircularProgressIndicator()
-            : ListView.builder(
-                itemCount: _topTracks.length,
-                itemBuilder: (context, index) {
-                  final track = _topTracks[index];
-                  return ListTile(
-                    leading: track['album']['images'].isNotEmpty
-                        ? Image.network(track['album']['images'][0]['url'])
-                        : const Icon(Icons.music_note),
-                    title: Text(track['name']),
-                    subtitle: Text('Artist: ${track['artists'][0]['name']}'),
-                  );
-                },
-              ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              _accessToken ?? 'Press the button to get the access token.',
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _getAccessToken,
+              child: Text('Get Access Token'),
+            ),
+          ],
+        ),
       ),
     );
   }
