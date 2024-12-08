@@ -38,7 +38,7 @@ class MainActivity : FlutterActivity() {
         // Webブラウザを開いて認証を開始
         println("Opening browser with URL: $url")
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-        if (preferEphemeral) {
+        if (preferEphemeral) {//
             intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
             println("Using ephemeral session")
             

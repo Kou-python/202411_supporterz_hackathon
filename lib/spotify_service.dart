@@ -36,7 +36,7 @@ class SpotifyService {
       print('Authorization callback result: $result');
       // トークン取得リクエスト
       final response = await http.post(
-        Uri.parse('https://accounts.spotify.com/api/token'),
+        Uri.parse('https://accounts.spotify.com/api/token/'),
         headers: {
           'Authorization': 'Basic ${base64Encode(utf8.encode('$_clientId:$_clientSecret'))}',
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -49,6 +49,7 @@ class SpotifyService {
       );
 
       if (response.statusCode == 200) {
+        print("あ");
         final data = jsonDecode(response.body);
         _accessToken = data['access_token'];
         return _accessToken!;

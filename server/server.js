@@ -17,6 +17,7 @@ const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
 const redirectUri = process.env.SPOTIFY_REDIRECT_URI;
 
 app.get('/callback', async (req, res) => {
+	print("あ");
 	const code = req.query.code || null;
 	const authOptions = {
 	  url: 'https://accounts.spotify.com/api/token',
