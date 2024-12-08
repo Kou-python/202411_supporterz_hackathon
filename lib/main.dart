@@ -5,19 +5,6 @@ void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: MyHomePage(),
-    );
-  }
-}
-
-// Pages--------------------------------------------
-
 class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -32,8 +19,14 @@ class Home extends StatelessWidget {
   }
 }
 
-//曲のカテゴリ検索
-class Search extends StatelessWidget {
+class Search extends StatefulWidget {
+  @override
+  _SearchState createState() => _SearchState();
+}
+
+class _SearchState extends State<Search> {
+  final TextEditingController _controller = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,28 +34,59 @@ class Search extends StatelessWidget {
         title: Text('Search'),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: '知りたいカテゴリについて入力してください！',
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 300,
+                child: TextField(
+                  controller: _controller, // コントローラーを設定
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: '知りたいカテゴリがあれば入力してください',
+                  ),
+                  autofocus: true,
+                ),
               ),
-              autofocus: true,
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              child: Text('検索'),
-              onPressed: () {
-                // ボタンが押されたときの処理をここに記述
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => Category()),
-                );
-              },
-            ),
-          ],
+              SizedBox(height: 20),
+              ElevatedButton(
+                child: Text('検索'),
+                onPressed: () {
+                  String category = _controller.text;
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Category(category),
+                    ),
+                  );
+                },
+              ),
+              SizedBox(height: 20),
+              Text('♬みんなに聞かれている曲ランキング♬'),
+              Container(
+                width: 600,
+                child: Table(
+                  columnWidths: <int, TableColumnWidth>{
+                    0: FixedColumnWidth(30),
+                    1: FixedColumnWidth(300),
+                    2: FixedColumnWidth(150),
+                  },
+                  border: TableBorder.all(),
+                  children: [
+                    for (int i = 0; i < 100; i++)
+                      TableRow(
+                        children: <Widget>[
+                          Text('${i + 1}', textAlign: TextAlign.center),
+                          Text("title", textAlign: TextAlign.center),
+                          Text("artist", textAlign: TextAlign.center),
+                        ],
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -83,7 +107,16 @@ class Setting extends StatelessWidget {
   }
 }
 
-// Page--------------------------------------------
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: MyHomePage(),
+    );
+  }
+}
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -123,7 +156,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
-            label: 'Setting',
+            label: '設定',
           ),
         ],
       ),
