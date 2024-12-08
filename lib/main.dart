@@ -94,14 +94,101 @@ class _SearchState extends State<Search> {
 }
 
 class Setting extends StatelessWidget {
+  final _formKey = GlobalKey<FormState>();
+  String? _name;
+  String? _gender;
+  int? _age;
+  String? _favoriteGenre;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Setting'),
+        title: Text('設定'),
       ),
-      body: Center(
-        child: Text('Setting Page'),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              TextFormField(
+                decoration: InputDecoration(labelText: '名前'),
+                onSaved: (value) {
+                  _name = value;
+                },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return '名前を入力してください';
+                  }
+                  return null;
+                },
+              ),
+              DropdownButtonFormField<String>(
+                decoration: InputDecoration(labelText: '性別'),
+                items: ['男性', '女性', 'その他'].map((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+                onChanged: (newValue) {
+                  _gender = newValue;
+                },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return '性別を選択してください';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                decoration: InputDecoration(labelText: '年齢'),
+                keyboardType: TextInputType.number,
+                onSaved: (value) {
+                  _age = int.tryParse(value!);
+                },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return '年齢を入力してください';
+                  }
+                  if (int.tryParse(value) == null) {
+                    return '有効な年齢を入力してください';
+                  }
+                  return null;
+                },
+              ),
+              DropdownButtonFormField<String>(
+                decoration: InputDecoration(labelText: '好きなジャンル'),
+                items: ['ポップ', 'ロック', 'クラシック', 'ジャズ'] .map((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+                onChanged: (newValue) {
+                  _favoriteGenre = newValue;
+                },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'ジャンルを選択してください';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    _formKey.currentState!.save();
+                    // 設定を処理するロジックをここに追加
+                  }
+                },
+                child: Text('保存'),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
