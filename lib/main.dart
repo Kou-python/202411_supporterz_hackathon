@@ -26,6 +26,8 @@ class Home extends StatelessWidget {
         title: Text('Home'),
       ),
       body: Center(
+      // ここにグループ作成・参加機能を追加
+
         child: Text('グループ追加ボタン'),
       ),
     );
