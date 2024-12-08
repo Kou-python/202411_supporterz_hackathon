@@ -1,28 +1,163 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Socket.IO chat</title>
-    <style>
-      body { margin: 0; padding-bottom: 3rem; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+	<head>
+		<title>Socket.IO chat</title>
+		<!-- スタイル -->
+		<style>
+			body {
+				margin: 0;
+				padding-bottom: 3rem;
+				font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+			}
 
-      #form { background: rgba(0, 0, 0, 0.15); padding: 0.25rem; position: fixed; bottom: 0; left: 0; right: 0; display: flex; height: 3rem; box-sizing: border-box; backdrop-filter: blur(10px); }
-      #input { border: none; padding: 0 1rem; flex-grow: 1; border-radius: 2rem; margin: 0.25rem; }
-      #input:focus { outline: none; }
-      #form > button { background: #333; border: none; padding: 0 1rem; margin: 0.25rem; border-radius: 3px; outline: none; color: #fff; }
+			#form {
+				background: rgba(0, 0, 0, 0.15);
+				padding: 0.25rem;
+				position: fixed;
+				bottom: 0;
+				left: 0;
+				right: 0;
+				display: flex;
+				height: 3rem;
+				box-sizing: border-box;
+				backdrop-filter: blur(10px);
+			}
+			#input {
+				border: none;
+				padding: 0 1rem;
+				flex-grow: 1;
+				border-radius: 2rem;
+				margin: 0.25rem;
+			}
+			#input:focus {
+				outline: none;
+			}
+			#form > button {
+				background: #333;
+				border: none;
+				padding: 0 1rem;
+				margin: 0.25rem;
+				border-radius: 3px;
+				outline: none;
+				color: #fff;
+			}
 
-      #messages { list-style-type: none; margin: 0; padding: 0; }
-      #messages > li { padding: 0.5rem 1rem; }
-      #messages > li:nth-child(odd) { background: #efefef; }
-    </style>
-  </head>
-  <body>
-    <ul id="messages"></ul>
-    <form id="form" action="">
-      <input id="input" autocomplete="off" /><button>Send</button>
-    </form>
-    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-<script>
-  var socket = io();
-</script>
-  </body>
+			#messages {
+				list-style-type: none;
+				margin: 0;
+				padding: 0;
+			}
+			#messages > li {
+				padding: 0.5rem 1rem;
+			}
+			#messages > li:nth-child(odd) {
+				background: #efefef;
+			}
+
+			#users {
+				position: fixed;
+				top: 0;
+				right: 0;
+				background: #f1f1f1;
+				padding: 1rem;
+				border-bottom-left-radius: 10px;
+			}
+
+			#typing {
+				font-style: italic;
+				color: #888;
+			}
+		</style>
+	</head>
+	<!--  -->
+	<body>
+		<div id="users">
+			<strong>オンラインユーザー:</strong>
+			<ul id="userList"></ul>
+		</div>
+		<ul id="messages"></ul>
+		<form id="form" action=""><input id="input" autocomplete="off" /><button>Send</button></form>
+		<div id="typing"></div>
+		<script src="/socket.io/socket.io.js"></script>
+		<script>
+			var socket = io();
+
+			// ニックネームの設定
+			var nickname = prompt("ニックネームを入力してください:");
+			if (nickname) {
+				socket.emit("set nickname", nickname);
+			}
+
+			var form = document.getElementById("form");
+			var input = document.getElementById("input");
+			var messages = document.getElementById("messages");
+			var userList = document.getElementById("userList");
+			var typing = document.getElementById("typing");
+			var typingTimeout;
+
+			form.addEventListener("submit", function (e) {
+				e.preventDefault();
+				if (input.value) {
+					// 自分のメッセージを直接追加
+					var item = document.createElement("li");
+					item.textContent = `私: ${input.value}`;
+					messages.appendChild(item);
+					window.scrollTo(0, document.body.scrollHeight);
+					// メッセージを送信
+					socket.emit("chat message", input.value);
+					input.value = "";
+				}
+			});
+
+			// キー入力時にタイピング通知
+			input.addEventListener("input", function () {
+				socket.emit("typing", true);
+				clearTimeout(typingTimeout);
+				typingTimeout = setTimeout(function () {
+					socket.emit("typing", false);
+				}, 1000);
+			});
+
+			// メッセージの受信
+			socket.on("chat message", function (msg) {
+				var item = document.createElement("li");
+				item.textContent = msg;
+				messages.appendChild(item);
+				window.scrollTo(0, document.body.scrollHeight);
+			});
+
+			// タイピング通知の受信
+			socket.on("typing", function (msg) {
+				typing.textContent = msg;
+				setTimeout(() => {
+					typing.textContent = "";
+				}, 3000);
+			});
+
+			// オンラインユーザーリストの更新
+			socket.on("user list", function (users) {
+				userList.innerHTML = "";
+				users.forEach(function(user) {
+					var li = document.createElement("li");
+					li.textContent = user;
+					userList.appendChild(li);
+				});
+			});
+
+			// プライベートメッセージの受信
+			socket.on("private message", function(msg) {
+				var item = document.createElement("li");
+				item.style.color = "blue";
+				item.textContent = msg;
+				messages.appendChild(item);
+				window.scrollTo(0, document.body.scrollHeight);
+			});
+
+			// プライベートメッセージ送信の例（コンソールから実行）
+			// プロダクションではUIを用意してください
+			function sendPrivateMessage(to, message) {
+				socket.emit("private message", { to: to, message: message });
+			}
+		</script>
+	</body>
 </html>
