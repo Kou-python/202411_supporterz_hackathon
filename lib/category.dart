@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+
 import 'main.dart';
 
 class Category extends StatelessWidget {
   Category(this.name);
   final String name;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

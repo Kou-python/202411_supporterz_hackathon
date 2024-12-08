@@ -19,15 +19,13 @@ class Home extends StatelessWidget {
   }
 }
 
-//曲のカテゴリ検索
 class Search extends StatefulWidget {
   @override
   _SearchState createState() => _SearchState();
 }
 
 class _SearchState extends State<Search> {
-  final TextEditingController _controller =
-      TextEditingController(); // 追加: 入力を管理するコントローラー
+  final TextEditingController _controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +38,6 @@ class _SearchState extends State<Search> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // TextFieldにコントローラーを設定
               Container(
                 width: 300,
                 child: TextField(
@@ -56,14 +53,11 @@ class _SearchState extends State<Search> {
               ElevatedButton(
                 child: Text('検索'),
                 onPressed: () {
-                  // 入力されたカテゴリを取得
                   String category = _controller.text;
-
-                  // Categoryページに渡す
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Category(category), // 渡す
+                      builder: (context) => Category(category),
                     ),
                   );
                 },
