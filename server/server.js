@@ -2,16 +2,45 @@ const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
 
+
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
-
 const groups = {}; // { groupId: { name: groupName, members: [] } }
 
-app.get('/callback', (req, res) => {
-	console.log('Callback endpoint reached');
-	res.send('Callback endpoint reached');
-});
+const querystring = require("querystring");
+const axios = require("axios");
+const cors = require("cors");
+app.use(cors()); // CORSを有効にする
+const clientId = process.env.SPOTIFY_CLIENT_ID;
+const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
+const redirectUri = process.env.SPOTIFY_REDIRECT_URI;
+
+app.get('/callback', async (req, res) => {
+	const code = req.query.code || null;
+	const authOptions = {
+	  url: 'https://accounts.spotify.com/api/token',
+	  method: 'post',
+	  data: querystring.stringify({
+		code: code,
+		redirect_uri: redirectUri,
+		grant_type: 'authorization_code'
+	  }),
+	  headers: {
+		'Authorization': 'Basic ' + Buffer.from(clientId + ':' + clientSecret).toString('base64'),
+		'Content-Type': 'application/x-www-form-urlencoded'
+	  }
+	};
+  
+	try {
+	  const response = await axios(authOptions);
+	  const accessToken = response.data.access_token;
+	  res.send(`Access Token: ${accessToken}`);
+	} catch (error) {
+	  console.error('Error getting access token:', error);
+	  res.send('Error getting access token');
+	}
+  });
 
 io.on("connection", (socket) => {
 	console.log(socket.id, "さんが入室しました");
@@ -32,6 +61,7 @@ io.on("connection", (socket) => {
 	socket.on("joinGroup", (groupId, userName, callback) => {
 		const group = groups[groupId];
 		if (!group) {
+			
 			callback({ success: false, message: "グループが見つかりません。" });
 		} else {
 			group.members.push(userName);

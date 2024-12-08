@@ -42,6 +42,8 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
+
+        resValue "string", "applicationName", "com.example.hackathon_mobileapp_202412.MyApplication"
     }
 
     buildTypes {
